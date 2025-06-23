@@ -16,11 +16,11 @@ export default async function StorePage({ params }: StorePageProps) {
     include: {
       products: {
         where: { status: "ACTIVE" },
-        include: {
-          category: true,
-        },
+        orderBy: {
+          createdAt: "desc"
+        }
       },
-      owner: true,
+      owner: true
     },
   })
 
@@ -33,7 +33,7 @@ export default async function StorePage({ params }: StorePageProps) {
       <StoreHeader store={store} />
       <StoreHero store={store} />
       <main className="container mx-auto px-4 py-8">
-        <ProductGrid products={store.products} />
+        <ProductGrid products={store.products} storeSlug={store.slug} />
       </main>
     </div>
   )

@@ -12,23 +12,30 @@ import { CreditCard, Lock, Shield } from "lucide-react"
 import { User } from "@prisma/client"
 import { useRouter } from "next/navigation"
 
-interface BookingData {
-  propertyId: string
-  propertyName: string
-  checkIn: string
-  checkOut: string
-  guests: number
-  rooms: number
-  total: number
+interface OrderItem {
+  id: string
+  quantity: number
+  price: number
+  product: {
+    id: string
+    name: string
+    images: string | string[]
+  }
+}
+
+interface OrderData {
+  orderId: string
+  storeName: string
   finalTotal: string
+  items: OrderItem[]
 }
 
 interface PaymentFormProps {
-  bookingData: BookingData
+  orderData: OrderData
   user: User
 }
 
-export function PaymentForm({ bookingData, user }: PaymentFormProps) {
+export function PaymentForm({ orderData, user }: PaymentFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("card")
@@ -98,25 +105,37 @@ export function PaymentForm({ bookingData, user }: PaymentFormProps) {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      // In a real app, you would:
-      // 1. Create a Stripe payment intent
-      // 2. Process the payment
-      // 3. Save the booking to the database
-      // 4. Send confirmation emails
+      // Process the payment and update order status
+      const response = await fetch('/api/orders/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderData.orderId,
+          paymentMethod,
+          paymentDetails: {
+            cardNumber: formData.cardNumber.replace(/\s/g, ''),
+            expiryDate: formData.expiryDate,
+            cvv: formData.cvv,
+            cardName: formData.cardName,
+            billingAddress: formData.billingAddress,
+            city: formData.city,
+            zipCode: formData.zipCode,
+            country: formData.country
+          }
+        })
+      })
 
-      const paymentData = {
-        bookingId: `booking_${Date.now()}`,
-        ...bookingData,
-        paymentMethod,
-        paymentStatus: 'completed',
-        paymentDate: new Date().toISOString(),
-        userId: user.id
+      if (!response.ok) {
+        throw new Error('Payment processing failed')
       }
 
-      console.log('Payment processed:', paymentData)
+      const result = await response.json()
+      console.log('Payment processed:', result)
 
       // Redirect to confirmation page
-      router.push(`/booking-confirmation?booking=${encodeURIComponent(JSON.stringify(paymentData))}`)
+      router.push(`/order-confirmation?orderId=${orderData.orderId}`)
     } catch (error) {
       console.error('Payment error:', error)
       alert('Payment failed. Please try again.')

@@ -1,13 +1,26 @@
 import type { Product, Category } from "@prisma/client"
 import { ProductCard } from "./product-card"
 
-interface ProductGridProps {
-  products: (Product & {
-    category: Category | null
-  })[]
+interface Product {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  price: number
+  images: string
+  stock: number
+  status: string
+  storeId: string
+  createdAt: Date
+  updatedAt: Date
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
+interface ProductGridProps {
+  products: Product[]
+  storeSlug: string
+}
+
+export function ProductGrid({ products, storeSlug }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-16">
@@ -33,7 +46,7 @@ export function ProductGrid({ products }: ProductGridProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} storeSlug={storeSlug} />
         ))}
       </div>
     </div>

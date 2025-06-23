@@ -1,7 +1,9 @@
+"use client"
+
 import type { Store } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ExternalLink, Settings, Plus } from "lucide-react"
+import { ExternalLink, Settings, Plus, Home, Store, Package } from "lucide-react"
 import Link from "next/link"
 
 interface DashboardHeaderProps {
@@ -35,19 +37,37 @@ export function DashboardHeader({ store }: DashboardHeaderProps) {
           </div>
 
           <div className="flex items-center space-x-3">
-            <Link href={`https://${store.slug}.storesphere.com`} target="_blank">
+            <Link href="/">
+              <Button variant="outline" size="sm">
+                <Home className="h-4 w-4 mr-2" />
+                Home
+              </Button>
+            </Link>
+            <Link href="/dashboard/stores">
+              <Button variant="outline" size="sm">
+                <Store className="h-4 w-4 mr-2" />
+                My Stores
+              </Button>
+            </Link>
+            <Link href={`/store/${store.slug}`} target="_blank">
               <Button variant="outline">
                 <ExternalLink className="h-4 w-4 mr-2" />
                 View Store
               </Button>
             </Link>
-            <Link href="/dashboard/products/new">
+            <Link href={`/dashboard/products?store=${store.slug}`}>
+              <Button variant="outline">
+                <Package className="h-4 w-4 mr-2" />
+                Products
+              </Button>
+            </Link>
+            <Link href={`/dashboard/products/new?store=${store.slug}`}>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
             </Link>
-            <Link href="/dashboard/settings">
+            <Link href={`/dashboard/settings?store=${store.slug}`}>
               <Button variant="outline" size="icon">
                 <Settings className="h-4 w-4" />
               </Button>

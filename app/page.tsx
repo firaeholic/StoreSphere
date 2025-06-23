@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Store, MapPin, Calendar, Users, Star, ArrowRight, Plus, Settings, Globe, CreditCard, Shield, Zap } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Store, Search, ShoppingCart, Users, Star, ArrowRight, Plus, Settings, Globe, CreditCard, Shield, Zap, Package } from "lucide-react"
 import Link from "next/link"
 import { UserButton } from "@clerk/nextjs"
 import { auth } from "@clerk/nextjs/server"
@@ -12,25 +13,30 @@ export default async function HomePage() {
   const { userId } = await auth()
   let user = null
   let userStores = []
-  let properties = []
+  let products = []
 
-  // Fetch properties
+  // Fetch available products from all stores
   try {
-    properties = await prisma.property.findMany({
+    products = await prisma.product.findMany({
       where: {
         status: "ACTIVE"
       },
       include: {
-        owner: true,
-        bookings: true
+        store: {
+          select: {
+            name: true,
+            slug: true,
+            ownerId: true
+          }
+        }
       },
       orderBy: {
         createdAt: "desc"
       },
-      take: 6
+      take: 12
     })
   } catch (error) {
-    console.error('Error fetching properties:', error)
+    console.error('Error fetching products:', error)
   }
 
   if (userId) {
@@ -38,7 +44,7 @@ export default async function HomePage() {
       user = await prisma.user.findUnique({
         where: { clerkId: userId },
         include: {
-          store: {
+          stores: {
             include: {
               products: true,
               orders: true,
@@ -48,7 +54,7 @@ export default async function HomePage() {
       })
 
       if (user) {
-        userStores = user.store ? [user.store] : []
+        userStores = user.stores || []
       }
     } catch (error) {
       console.error('Error fetching user:', error)
@@ -61,10 +67,10 @@ export default async function HomePage() {
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <Store className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">StoreSphere</span>
-          </div>
+            <span className="text-xl font-bold">StoreSphere</span>
+          </Link>
           <div className="flex items-center space-x-4">
             {userId ? (
               <>
@@ -136,12 +142,12 @@ export default async function HomePage() {
                         <CardContent>
                           <div className="flex gap-2">
                             <Button asChild size="sm" className="flex-1">
-                              <Link href={`/store/${store.subdomain}`}>
+                              <Link href={`/dashboard?store=${store.slug}`}>
                                 View Store
                               </Link>
                             </Button>
                             <Button asChild variant="outline" size="sm" className="flex-1">
-                              <Link href="/dashboard">
+                              <Link href={`/dashboard/settings?store=${store.slug}`}>
                                 Manage
                               </Link>
                             </Button>
@@ -153,59 +159,77 @@ export default async function HomePage() {
                 </div>
               )}
 
-              {/* Featured Properties */}
+              {/* Available Products */}
               <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Properties</h2>
-                {properties.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {properties.map((property) => (
-                      <Card key={property.id} className="hover:shadow-lg transition-shadow">
-                        <CardHeader>
-                          <div className="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                            {property.images && property.images.length > 0 ? (
-                              <img
-                                src={property.images[0]}
-                                alt={property.name}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            ) : (
-                              <span className="text-gray-500">Property Image</span>
-                            )}
-                          </div>
-                          <CardTitle className="flex items-center justify-between">
-                            <span>{property.name}</span>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm">{property.rating?.toFixed(1) || 'N/A'}</span>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                  <h2 className="text-2xl font-bold text-gray-900">Available Products</h2>
+                  <div className="relative w-full sm:w-80">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search products..."
+                      className="pl-10"
+                      id="product-search"
+                    />
+                  </div>
+                </div>
+                {products.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="products-grid">
+                    {products.map((product) => {
+                      const isOwnProduct = user && product.store.ownerId === user.id;
+                      const productImages = typeof product.images === 'string' ? JSON.parse(product.images || '[]') : product.images || [];
+                      
+                      return (
+                        <Card key={product.id} className="hover:shadow-lg transition-shadow">
+                          <CardHeader>
+                            <div className="aspect-square bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                              {productImages.length > 0 ? (
+                                <img
+                                  src={productImages[0]}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Package className="h-12 w-12 text-gray-400" />
+                              )}
                             </div>
-                          </CardTitle>
-                          <CardDescription className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {property.location}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex items-center justify-between mb-4">
-                            <span className="text-2xl font-bold">${property.price}</span>
-                            <span className="text-gray-600">per night</span>
-                          </div>
-                          <Button asChild className="w-full">
-                            <Link href={`/property/${property.id}`}>
-                              <Calendar className="mr-2 h-4 w-4" />
-                              View Details
-                            </Link>
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
+                            <CardTitle className="text-lg">{product.name}</CardTitle>
+                            <CardDescription className="flex items-center gap-1">
+                              <Store className="h-4 w-4" />
+                              {product.store.name}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex items-center justify-between mb-4">
+                              <span className="text-2xl font-bold">${product.price}</span>
+                              <Badge variant="secondary">{product.stock} in stock</Badge>
+                            </div>
+                            {product.description && (
+                              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+                            )}
+                            {isOwnProduct ? (
+                              <Button disabled className="w-full" variant="outline">
+                                Your Product
+                              </Button>
+                            ) : (
+                              <Button asChild className="w-full">
+                                <Link href={`/store/${product.store.slug}?product=${product.slug}`}>
+                                  <ShoppingCart className="mr-2 h-4 w-4" />
+                                  Order Now
+                                </Link>
+                              </Button>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center py-12">
                     <div className="text-gray-400 mb-4">
-                      <MapPin className="w-16 h-16 mx-auto" />
+                      <Package className="w-16 h-16 mx-auto" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-600 mb-2">No Properties Available</h3>
-                    <p className="text-gray-500 mb-6">There are currently no properties listed. Check back later!</p>
+                    <h3 className="text-xl font-semibold text-gray-600 mb-2">No Products Available</h3>
+                    <p className="text-gray-500 mb-6">There are currently no products listed. Check back later!</p>
                   </div>
                 )}
               </div>
@@ -213,7 +237,7 @@ export default async function HomePage() {
               {/* Quick Actions */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Button asChild className="h-auto p-6 flex flex-col items-start space-y-2">
-                  <Link href="/dashboard">
+                  <Link href="/dashboard/stores">
                     <Settings className="h-6 w-6" />
                     <span className="font-semibold">Manage Stores</span>
                     <span className="text-sm opacity-90">Configure your stores and settings</span>
@@ -221,7 +245,7 @@ export default async function HomePage() {
                 </Button>
                 
                 <Button asChild variant="outline" className="h-auto p-6 flex flex-col items-start space-y-2">
-                  <Link href="/dashboard/create-store">
+                  <Link href="/create-store">
                     <Plus className="h-6 w-6" />
                     <span className="font-semibold">Create New Store</span>
                     <span className="text-sm opacity-90">Start a new business venture</span>

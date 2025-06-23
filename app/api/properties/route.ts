@@ -85,8 +85,8 @@ export async function POST(request: NextRequest) {
         bedrooms,
         bathrooms,
         maxGuests,
-        amenities: amenities || [],
-        images: images || [],
+        amenities: JSON.stringify(amenities || []),
+        images: JSON.stringify(images || []),
         ownerId: user.id,
         status: "ACTIVE"
       },
@@ -127,8 +127,7 @@ export async function GET(request: NextRequest) {
 
     if (location) {
       where.location = {
-        contains: location,
-        mode: 'insensitive'
+        contains: location
       }
     }
 
@@ -156,11 +155,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (amenities && amenities.length > 0) {
-      where.amenities = {
-        hasEvery: amenities
-      }
-    }
+    // Note: For SQLite, amenities filtering would need custom logic
+    // since amenities are stored as JSON strings
 
     // Get properties with pagination
     const [properties, total] = await Promise.all([
