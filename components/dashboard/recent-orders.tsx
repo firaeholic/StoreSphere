@@ -102,7 +102,7 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
             <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="font-medium">#{order.id.slice(-8)}</span>
+                  <span className="font-medium">#{order.id.toString().slice(-8)}</span>
                   <Badge className={getStatusColor(order.status)}>
                     {order.status}
                   </Badge>
@@ -114,7 +114,7 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
                   </div>
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium">{formatPrice(order.totalAmount)}</span>
+                  <span className="font-medium">{formatPrice(order.items.reduce((total, item) => total + (item.price * item.quantity), 0))}</span>
                   <span className="mx-2">•</span>
                   <span>{order.items.length} item{order.items.length !== 1 ? 's' : ''}</span>
                   <span className="mx-2">•</span>

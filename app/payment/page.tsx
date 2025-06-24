@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/prisma"
 import { PaymentForm } from "@/components/payment/payment-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,7 +29,7 @@ export default async function PaymentPage({ searchParams }: { searchParams: { or
 
   // Get the order
   const order = await prisma.order.findUnique({
-    where: { id: searchParams.orderId },
+    where: { id: parseInt(searchParams.orderId) },
     include: {
       items: {
         include: {
@@ -63,9 +62,10 @@ export default async function PaymentPage({ searchParams }: { searchParams: { or
     }).format(price)
   }
 
-  const serviceFee = order.totalAmount * 0.05 // 5% service fee
-  const tax = order.totalAmount * 0.08 // 8% tax
-  const finalTotal = order.totalAmount + serviceFee + tax
+const serviceFee = order.items.reduce((total, item) => total + (item.price * item.quantity), 0) * 0.05 // 5% service fee
+const tax = order.items.reduce((total, item) => total + (item.price * item.quantity), 0) * 0.08 // 8% tax
+const subtotal = order.items.reduce((total, item) => total + (item.price * item.quantity), 0)
+const finalTotal = subtotal + serviceFee + tax
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -96,7 +96,7 @@ export default async function PaymentPage({ searchParams }: { searchParams: { or
                     <Store className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">{order.store.name}</span>
                   </div>
-                  <p className="text-sm text-gray-600">Order #{order.id.slice(-8)}</p>
+                  <p className="text-sm text-gray-600">Order #{order.id.toString().padStart(8, '0')}</p>
                   <p className="text-sm text-gray-600">{format(order.createdAt, "PPP 'at' p")}</p>
                 </div>
 
@@ -136,7 +136,7 @@ export default async function PaymentPage({ searchParams }: { searchParams: { or
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal:</span>
-                    <span>{formatPrice(order.totalAmount)}</span>
+                    <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Service fee (5%):</span>
@@ -175,10 +175,17 @@ export default async function PaymentPage({ searchParams }: { searchParams: { or
           <div>
             <PaymentForm 
               orderData={{
-                orderId: order.id,
+                orderId: order.id.toString(),
                 storeName: order.store.name,
                 finalTotal: finalTotal.toFixed(2),
-                items: order.items
+                items: order.items.map(item => ({
+                  ...item,
+                  id: item.id.toString(),
+                  product: {
+                    ...item.product,
+                    id: item.product.id.toString(),
+                  }
+                }))
               }} 
               user={user} 
             />

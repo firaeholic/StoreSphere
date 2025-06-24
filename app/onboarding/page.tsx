@@ -16,11 +16,11 @@ export default async function OnboardingPage() {
   const user = await prisma.user.findUnique({
     where: { clerkId: userId },
     include: {
-      store: true,
+      stores: true,
     },
   })
 
-  if (user?.store) {
+  if (user?.stores) {
     redirect("/dashboard")
   }
 

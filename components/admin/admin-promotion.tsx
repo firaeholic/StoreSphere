@@ -53,18 +53,21 @@ export function AdminPromotion({ user }: AdminPromotionProps) {
 
   if (isPromoted) {
     return (
-      <Card className="border-yellow-200 bg-yellow-50">
+      <Card className="border-0 bg-gradient-to-br from-yellow-50 to-amber-50 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-3">
-            <Crown className="h-8 w-8 text-yellow-600" />
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Crown className="h-10 w-10 text-yellow-600 z-10 relative" />
+              <div className="absolute inset-0 bg-yellow-500 rounded-full opacity-20 blur-sm animate-pulse"></div>
+            </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-yellow-900">Admin Access Granted</span>
-                <Badge variant="default" className="bg-yellow-600">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-bold text-xl bg-gradient-to-r from-yellow-700 to-amber-700 bg-clip-text text-transparent">Admin Access Granted</span>
+                <Badge variant="default" className="bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-semibold">
                   ADMIN
                 </Badge>
               </div>
-              <p className="text-sm text-yellow-700 mt-1">
+              <p className="text-amber-700 mt-1">
                 You now have access to the admin dashboard and can manage the platform.
               </p>
             </div>
@@ -75,18 +78,20 @@ export function AdminPromotion({ user }: AdminPromotionProps) {
   }
 
   return (
-    <Card className="border-blue-200 bg-blue-50">
+    <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-blue-600" />
-          Admin Access
+        <CardTitle className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+            <Shield className="h-5 w-5 text-white" />
+          </div>
+          <span className="bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">Admin Access</span>
         </CardTitle>
-        <CardDescription>
-          Promote yourself to admin to access advanced features
+        <CardDescription className="text-blue-700">
+          Contact an administrator for promotion to access advanced features
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+        <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
           <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
           <div className="text-sm">
             <p className="font-medium text-amber-900">Demo Feature</p>
@@ -97,24 +102,24 @@ export function AdminPromotion({ user }: AdminPromotionProps) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h4 className="font-medium">Admin privileges include:</h4>
-          <ul className="text-sm text-gray-600 space-y-1">
-            <li>• Access to admin dashboard</li>
-            <li>• Manage all stores and users</li>
-            <li>• View platform analytics</li>
-            <li>• Configure system settings</li>
-            <li>• Moderate content and users</li>
+        <div className="space-y-3">
+          <h4 className="font-medium text-gray-900">Admin privileges include:</h4>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li className="flex items-center gap-2">• Access to admin dashboard</li>
+            <li className="flex items-center gap-2">• Manage all stores and users</li>
+            <li className="flex items-center gap-2">• View platform analytics</li>
+            <li className="flex items-center gap-2">• Configure system settings</li>
+            <li className="flex items-center gap-2">• Moderate content and users</li>
           </ul>
         </div>
 
         <Button 
           onClick={handlePromotion}
           disabled={isLoading}
-          className="w-full"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
         >
           <Crown className="mr-2 h-4 w-4" />
-          {isLoading ? "Promoting..." : "Promote to Admin"}
+          {isLoading ? "Promoting..." : "Promote to Admin (Demo)"}
         </Button>
       </CardContent>
     </Card>

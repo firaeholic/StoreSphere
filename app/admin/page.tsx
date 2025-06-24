@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server"
+import { auth, createClerkClient } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { AdminHeader } from "@/components/admin/admin-header"
@@ -31,7 +31,11 @@ export default async function AdminPage() {
     },
   })
 
-  const totalUsers = await prisma.user.count()
+  // Get total users from Clerk
+
+  const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
+  const clerkUsers = await clerkClient.users.getUserList({ limit: 1000 })
+  const totalUsers = clerkUsers.data.length
   const totalOrders = await prisma.order.count()
   const totalRevenue = await prisma.order.aggregate({
     _sum: {

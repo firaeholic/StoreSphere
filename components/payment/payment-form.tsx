@@ -329,7 +329,7 @@ export function PaymentForm({ orderData, user }: PaymentFormProps) {
           size="lg"
         >
           <Lock className="mr-2 h-4 w-4" />
-          {isLoading ? "Processing Payment..." : `Pay $${bookingData.finalTotal}`}
+          {isLoading ? "Processing Payment..." : `Pay $${orderData.finalTotal}`}
         </Button>
       </CardContent>
     </Card>

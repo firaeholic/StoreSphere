@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
 const createOrderSchema = z.object({
-  productId: z.string().min(1, "Product ID is required"),
+  productId: z.union([z.string(), z.number()]).transform(val => String(val)),
   quantity: z.number().min(1, "Quantity must be at least 1"),
   storeSlug: z.string().min(1, "Store slug is required"),
 })
@@ -21,25 +21,21 @@ export async function POST(request: NextRequest) {
     const validatedData = createOrderSchema.parse(body)
     const { productId, quantity, storeSlug } = validatedData
 
-    // Get or create user
-    let user = await prisma.user.findUnique({
+    // Get or create user using upsert to avoid unique constraint issues
+    const user = await prisma.user.upsert({
       where: { clerkId: userId },
+      update: {},
+      create: {
+        clerkId: userId,
+        email: `temp_${userId}@example.com`, // Temporary email to avoid constraint
+        firstName: "",
+        lastName: "",
+      },
     })
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: "", // Will be updated from Clerk webhook
-          firstName: "", // Will be updated from Clerk webhook
-          lastName: "", // Will be updated from Clerk webhook
-        },
-      })
-    }
 
     // Get the product and store
     const product = await prisma.product.findUnique({
-      where: { id: productId },
+      where: { id: parseInt(productId) },
       include: {
         store: true,
       },
@@ -66,13 +62,18 @@ export async function POST(request: NextRequest) {
     // Calculate total amount
     const totalAmount = product.price * quantity
 
+    // Generate order number
+    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+
     // Create the order
     const order = await prisma.order.create({
       data: {
+        orderNumber,
         customerId: user.id,
         storeId: product.storeId,
         status: "PENDING",
-        totalAmount,
+        total: totalAmount,
+        shippingAddress: {},
         items: {
           create: {
             productId: product.id,
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     // Update product stock
     await prisma.product.update({
-      where: { id: productId },
+      where: { id: parseInt(productId) },
       data: {
         stock: {
           decrement: quantity,
