@@ -8,8 +8,11 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "StoreSphere - Multi-Vendor E-Commerce Platform",
-  description: "Build your online store with StoreSphere",
-    generator: 'v0.dev'
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 }
 
 export default function RootLayout({
