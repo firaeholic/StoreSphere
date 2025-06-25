@@ -21,7 +21,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const isLocalhost = hostname.includes("localhost") || hostname.includes("127.0.0.1")
   
   // Handle subdomain routing for tenants (works for both production and localhost)
-  if (!isLocalhost && subdomain && subdomain !== "www" && subdomain !== "admin") {
+  if (!isLocalhost && subdomain && subdomain !== "www" && subdomain !== "admin" && subdomain !== "storesphere") {
     // Rewrite to tenant-specific pages for production subdomains
     url.pathname = `/store/${subdomain}${url.pathname}`
     return NextResponse.rewrite(url)
