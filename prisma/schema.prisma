@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   clerkId   String   @unique
   email     String   @unique
   firstName String?
@@ -33,7 +33,7 @@ model User {
 }
 
 model Store {
-  id          Int         @id @default(autoincrement())
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   slug        String      @unique
   description String?
@@ -46,8 +46,8 @@ model Store {
   stripeAccountId String?
   
   // Owner
-  ownerId Int
-  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id])
   
   // Relations
   products Product[]
@@ -60,14 +60,14 @@ model Store {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   slug        String
   description String?
   price       Float
   comparePrice Float?
   images      String // JSON string
-  stock       Int      @default(0)
+  stock       Int           @default(0)
   status      ProductStatus @default(DRAFT)
   
   // SEO
@@ -75,11 +75,11 @@ model Product {
   metaDescription String?
   
   // Store relation
-  storeId Int
+  storeId String @db.ObjectId
   store   Store  @relation(fields: [storeId], references: [id])
   
   // Categories
-  categoryId Int?
+  categoryId String?   @db.ObjectId
   category   Category? @relation(fields: [categoryId], references: [id])
   
   // Variants
@@ -98,20 +98,20 @@ model Product {
 }
 
 model ProductVariant {
-  id        Int @id @default(autoincrement())
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   value     String
   price     Float?
-  stock     Int    @default(0)
+  stock     Int     @default(0)
   
-  productId Int
+  productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
   
   @@map("product_variants")
 }
 
 model Category {
-  id        Int @id @default(autoincrement())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   slug        String    @unique
   description String?
@@ -126,22 +126,22 @@ model Category {
 }
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  orderNumber   String      @unique
-  status        OrderStatus @default(PENDING)
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber   String        @unique
+  status        OrderStatus   @default(PENDING)
   total         Float
-  currency      String      @default("USD")
+  currency      String        @default("USD")
   
   // Payment
   stripePaymentIntentId String?
   paymentStatus         PaymentStatus @default(PENDING)
   
   // Customer
-  customerId Int
+  customerId String @db.ObjectId
   customer   User   @relation(fields: [customerId], references: [id])
   
   // Store
-  storeId Int
+  storeId String @db.ObjectId
   store   Store  @relation(fields: [storeId], references: [id])
   
   // Shipping
@@ -158,27 +158,27 @@ model Order {
 }
 
 model OrderItem {
-  id       Int @id @default(autoincrement())
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
   quantity Int
   price    Float
   
-  orderId Int
-  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String  @db.ObjectId
+  order   Order   @relation(fields: [orderId], references: [id])
   
-  productId Int
+  productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
   
   @@map("order_items")
 }
 
 model CartItem {
-  id            Int         @id @default(autoincrement())
-  quantity Int    @default(1)
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  quantity Int     @default(1)
   
-  userId Int
-  user   User   @relation(fields: [userId], references: [id])
+  userId String  @db.ObjectId
+  user   User    @relation(fields: [userId], references: [id])
   
-  productId Int
+  productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
   
   createdAt DateTime @default(now())
@@ -189,12 +189,12 @@ model CartItem {
 }
 
 model WishlistItem {
-  id Int @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   
-  userId Int
-  user   User   @relation(fields: [userId], references: [id])
+  userId String  @db.ObjectId
+  user   User    @relation(fields: [userId], references: [id])
   
-  productId Int
+  productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
   
   createdAt DateTime @default(now())
@@ -240,7 +240,7 @@ enum PaymentStatus {
 }
 
 model Property {
-  id          Int      @id @default(autoincrement())
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   location    String
@@ -250,11 +250,11 @@ model Property {
   bedrooms    Int
   bathrooms   Int
   maxGuests   Int
-  rating      Float    @default(0)
+  rating      Float          @default(0)
   status      PropertyStatus @default(ACTIVE)
   
   // Owner
-  ownerId Int
+  ownerId String @db.ObjectId
   owner   User   @relation(fields: [ownerId], references: [id])
   
   // Bookings
@@ -267,7 +267,7 @@ model Property {
 }
 
 model PropertyBooking {
-  id          Int      @id @default(autoincrement())
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
   checkIn     DateTime
   checkOut    DateTime
   guests      Int
@@ -275,11 +275,11 @@ model PropertyBooking {
   status      BookingStatus @default(PENDING)
   
   // Guest
-  guestId Int
-  guest   User   @relation(fields: [guestId], references: [id])
+  guestId String   @db.ObjectId
+  guest   User     @relation(fields: [guestId], references: [id])
   
   // Property
-  propertyId Int
+  propertyId String   @db.ObjectId
   property   Property @relation(fields: [propertyId], references: [id])
   
   // Payment

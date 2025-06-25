@@ -91,16 +91,6 @@ export function AdminPromotion({ user }: AdminPromotionProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
-          <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
-          <div className="text-sm">
-            <p className="font-medium text-amber-900">Demo Feature</p>
-            <p className="text-amber-700">
-              In this demo, any user can promote themselves to admin. In a production environment, 
-              admin access would be granted through proper authorization processes.
-            </p>
-          </div>
-        </div>
 
         <div className="space-y-3">
           <h4 className="font-medium text-gray-900">Admin privileges include:</h4>
@@ -112,15 +102,6 @@ export function AdminPromotion({ user }: AdminPromotionProps) {
             <li className="flex items-center gap-2">• Moderate content and users</li>
           </ul>
         </div>
-
-        <Button 
-          onClick={handlePromotion}
-          disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          <Crown className="mr-2 h-4 w-4" />
-          {isLoading ? "Promoting..." : "Promote to Admin (Demo)"}
-        </Button>
       </CardContent>
     </Card>
   )
