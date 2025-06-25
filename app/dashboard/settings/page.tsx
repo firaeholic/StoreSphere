@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useAuth } from "@clerk/nextjs"
 import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -31,6 +31,14 @@ interface SettingsPageProps {
 }
 
 export default function StoreSettingsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <StoreSettingsContent />
+    </Suspense>
+  )
+}
+
+function StoreSettingsContent() {
   const { userId } = useAuth()
   const searchParams = useSearchParams()
   const storeSlug = searchParams.get('store')

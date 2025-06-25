@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@clerk/nextjs"
 import { useRouter, useSearchParams, useParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,7 +14,7 @@ import { ArrowLeft, Save, Plus, X } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
-export default function EditProductPage() {
+function EditProductContent() {
   const { userId } = useAuth()
   const router = useRouter()
   const params = useParams()
@@ -396,5 +396,13 @@ export default function EditProductPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function EditProductPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <EditProductContent />
+    </Suspense>
   )
 }

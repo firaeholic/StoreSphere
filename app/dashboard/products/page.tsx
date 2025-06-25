@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from "@clerk/nextjs"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -31,6 +31,14 @@ interface Product {
   }
 }
 
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
+  )
+}
+
 interface ProductsResponse {
   products: Product[]
   pagination: {
@@ -41,7 +49,7 @@ interface ProductsResponse {
   }
 }
 
-export default function ProductsPage() {
+function ProductsContent() {
   const { userId } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()

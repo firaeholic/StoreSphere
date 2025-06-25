@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@clerk/nextjs"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,6 +21,14 @@ interface NewProductPageProps {
 }
 
 export default function NewProductPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <NewProductContent />
+    </Suspense>
+  )
+}
+
+function NewProductContent() {
   const { userId } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -84,8 +92,7 @@ export default function NewProductPage() {
       const productData = {
         ...formData,
         price: parseFloat(formData.price) || 0,
-        compareAtPrice: formData.compareAtPrice ? parseFloat(formData.compareAtPrice) : null,
-        weight: formData.weight ? parseFloat(formData.weight) : null,
+        compareAtPrice: (formData as any).compareAtPrice ? parseFloat((formData as any).compareAtPrice) : null,
         inventory: formData.trackQuantity ? parseInt(formData.quantity) || 0 : parseInt(formData.inventory) || 0,
         lowStockThreshold: formData.trackQuantity ? parseInt(formData.lowStockThreshold) || 0 : null,
         images: images.filter(img => img.trim() !== ''),
