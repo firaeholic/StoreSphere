@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -32,7 +31,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
   }
 
   const booking = await prisma.propertyBooking.findUnique({
-    where: { id: params.id },
+    where: { id: Number(params.id) },
     include: {
       property: {
         include: {
@@ -48,7 +47,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Booking Not Found</h1>
-          <p className="text-gray-600 mb-6">The booking you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-6">The booking you are looking for doesnot exist.</p>
           <Link href="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
             Back to Home
           </Link>
@@ -63,7 +62,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600 mb-6">You don't have permission to view this booking.</p>
+          <p className="text-gray-600 mb-6">You dont have permission to view this booking.</p>
           <Link href="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
             Back to Home
           </Link>
@@ -205,7 +204,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
               </CardHeader>
               <CardContent>
                 <PaymentForm 
-                  booking={booking}
+                  booking={{...booking, id: booking.id.toString()}}
                   totalAmount={finalTotal}
                 />
               </CardContent>

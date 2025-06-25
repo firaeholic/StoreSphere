@@ -24,11 +24,8 @@ export async function POST(request: NextRequest) {
       name,
       description,
       price,
-      category,
-      tags,
       images,
       inventory,
-      sku,
       status,
       storeSlug
     } = body

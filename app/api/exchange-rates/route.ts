@@ -22,6 +22,6 @@ export async function GET() {
       timestamp: Date.now(),
     })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch exchange rates" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to fetch exchange rates" + error }, { status: 500 })
   }
 }

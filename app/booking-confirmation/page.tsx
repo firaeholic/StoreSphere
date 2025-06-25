@@ -23,6 +23,7 @@ export default async function BookingConfirmationPage({ searchParams }: { search
   try {
     bookingData = JSON.parse(decodeURIComponent(searchParams.booking))
   } catch (error) {
+    console.error("Error parsing booking data:", error)
     redirect("/")
   }
 
@@ -121,7 +122,7 @@ export default async function BookingConfirmationPage({ searchParams }: { search
             {/* Next Steps */}
             <Card>
               <CardHeader>
-                <CardTitle>What's Next?</CardTitle>
+                <CardTitle>Whats Next?</CardTitle>
                 <CardDescription>
                   Important information for your stay
                 </CardDescription>
@@ -148,7 +149,7 @@ export default async function BookingConfirmationPage({ searchParams }: { search
                     <CheckCircle className="h-5 w-5 text-purple-600 mt-0.5" />
                     <div>
                       <h4 className="font-medium">Check-in Instructions</h4>
-                      <p className="text-sm text-gray-600">You'll receive check-in details and access codes via email and SMS.</p>
+                      <p className="text-sm text-gray-600">You will receive check-in details and access codes via email and SMS.</p>
                     </div>
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     
     if (!userId) {
       return NextResponse.json(
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { orderId, paymentMethod, paymentDetails } = body
+    const { orderId, paymentMethod } = body
 
     if (!orderId) {
       return NextResponse.json(
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the order belongs to the user
-    if (order.userId !== userId) {
+    if (order.customerId !== userId) {
       return NextResponse.json(
         { error: "Unauthorized to process this order" },
         { status: 403 }

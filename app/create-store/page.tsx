@@ -49,7 +49,7 @@ export default async function CreateStorePage() {
               Store Information
             </CardTitle>
             <CardDescription>
-              This information will be displayed on your store's public page
+              This information will be displayed on your stores public page
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -80,7 +80,7 @@ export default async function CreateStorePage() {
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    This will be your store's web address
+                    This will be your stores web address
                   </p>
                 </div>
 

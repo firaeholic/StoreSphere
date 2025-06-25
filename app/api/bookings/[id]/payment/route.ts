@@ -14,7 +14,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     const body = await request.json()
-    const { paymentMethod, amount, paymentDetails } = body
+    const { paymentMethod, amount } = body
 
     // Get user from database
     const user = await prisma.user.findUnique({
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     // Get booking
     const booking = await prisma.propertyBooking.findUnique({
-      where: { id: params.id },
+      where: { id: parseInt(params.id) },
       include: {
         property: true,
         guest: true
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // - Square
     // - etc.
     
-    let paymentResult = {
+    const paymentResult = {
       success: true,
       transactionId: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       paymentMethod,
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     if (!paymentResult.success) {
       // Update booking with failed payment
       await prisma.propertyBooking.update({
-        where: { id: params.id },
+        where: { id: parseInt(params.id) },
         data: {
           paymentStatus: "FAILED"
         }
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     // Update booking with successful payment
     const updatedBooking = await prisma.propertyBooking.update({
-      where: { id: params.id },
+      where: { id: parseInt(params.id) },
       data: {
         paymentStatus: "PAID",
         status: "CONFIRMED",

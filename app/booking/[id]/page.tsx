@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { BookingForm } from "@/components/booking/booking-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Users, Bed, Bath, Wifi, Car } from "lucide-react"
+import { MapPin, Users, Bed, Bath } from "lucide-react"
 
 // Sample property data - replace with real database
 const properties = {

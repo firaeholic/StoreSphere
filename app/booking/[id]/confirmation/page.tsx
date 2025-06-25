@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle, CalendarIcon, MapPin, Users, Clock, Download, Share } from "lucide-react"
+import { CheckCircle, CalendarIcon, Users, Clock, Download, Share } from "lucide-react"
 import { format, differenceInDays } from "date-fns"
 
 interface ConfirmationPageProps {
@@ -31,7 +31,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
   }
 
   const booking = await prisma.propertyBooking.findUnique({
-    where: { id: params.id },
+    where: { id: Number(params.id) },
     include: {
       property: {
         include: {
@@ -47,7 +47,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Booking Not Found</h1>
-          <p className="text-gray-600 mb-6">The booking you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-6">The booking you are looking for does not exist.</p>
           <Link href="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
             Back to Home
           </Link>
@@ -62,7 +62,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600 mb-6">You don't have permission to view this booking.</p>
+          <p className="text-gray-600 mb-6">You do not have permission to view this booking.</p>
           <Link href="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
             Back to Home
           </Link>
@@ -103,30 +103,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
                   <CardDescription>Confirmation Number: {booking.id}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Property Info */}
-                  <div className="flex gap-4">
-                    <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {booking.property.images && booking.property.images.length > 0 ? (
-                        <img
-                          src={booking.property.images[0]}
-                          alt={booking.property.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">
-                          <span className="text-xs">No Image</span>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold">{booking.property.name}</h3>
-                      <div className="flex items-center gap-1 text-gray-600 mb-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{booking.property.location}</span>
-                      </div>
-                      <p className="text-gray-600">Hosted by {booking.property.owner.firstName || 'Host'}</p>
-                    </div>
-                  </div>
+
 
                   <Separator />
 
@@ -209,7 +186,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
-                    <span>${booking.property.price} × {nights} nights</span>
+                    <span>${booking.totalPrice} × {nights} nights</span>
                     <span>${booking.totalPrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">

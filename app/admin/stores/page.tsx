@@ -5,7 +5,7 @@ import { AdminHeader } from "@/components/admin/admin-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Store, Package, ShoppingCart, DollarSign } from "lucide-react"
+import { Store, Package, DollarSign } from "lucide-react"
 import { EditStoreButton } from "@/components/admin/edit-store-button"
 import { DeleteStoreButton } from "@/components/admin/delete-store-button"
 

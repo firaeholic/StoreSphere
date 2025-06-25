@@ -219,7 +219,7 @@ function NewProductContent() {
                       id="compareAtPrice"
                       type="number"
                       step="0.01"
-                      value={formData.compareAtPrice}
+                      value={(formData as any).compareAtPrice || ''}
                       onChange={(e) => handleInputChange('compareAtPrice', e.target.value)}
                       placeholder="0.00"
                     />

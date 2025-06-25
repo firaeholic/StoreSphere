@@ -116,7 +116,6 @@ export async function GET(request: NextRequest) {
     const bedrooms = searchParams.get('bedrooms')
     const bathrooms = searchParams.get('bathrooms')
     const maxGuests = searchParams.get('maxGuests')
-    const amenities = searchParams.get('amenities')?.split(',')
 
     const skip = (page - 1) * limit
 
