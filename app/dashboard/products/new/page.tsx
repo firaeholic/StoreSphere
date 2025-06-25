@@ -14,11 +14,6 @@ import { ArrowLeft, Save, Plus, X } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
-interface NewProductPageProps {
-  searchParams: {
-    store?: string
-  }
-}
 
 export default function NewProductPage() {
   return (
@@ -137,20 +132,6 @@ function NewProductContent() {
 
   const updateImage = (index: number, value: string) => {
     setImages(prev => prev.map((img, i) => i === index ? value : img))
-  }
-
-  const addVariant = () => {
-    setVariants(prev => [...prev, { name: '', value: '', price: '', sku: '' }])
-  }
-
-  const removeVariant = (index: number) => {
-    setVariants(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const updateVariant = (index: number, field: string, value: string) => {
-    setVariants(prev => prev.map((variant, i) => 
-      i === index ? { ...variant, [field]: value } : variant
-    ))
   }
 
   return (
